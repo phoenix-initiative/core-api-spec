@@ -1,0 +1,235 @@
+swagger: "2.0"
+info:
+  version: 0.0.1
+  title: Phoenix
+  description: The api for Phoenix Core
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Phoenix Team
+    email: api@phoenixinitialive.io
+    url: http://phoenixinitiative.io
+host: yourdomain.com
+basePath: /api
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /users:
+    get:
+      description: |
+        Returns all users registered on the server
+      operationId: getUsers
+      parameters:
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: user response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Unautharized
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: Creates a new user
+      operationId: addUser
+      parameters:
+        - name: user
+          in: body
+          description: User to be created
+          required: true
+          schema:
+            $ref: '#/definitions/NewUser'
+      responses:
+        201:
+          description: user created and email sent
+          schema:
+            $ref: '#/definitions/User'
+        500:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: Update existing user
+      operationId: updateUser
+      parameters:
+        - name: user object
+          in: body
+          description: Updated user info
+          required: true
+          schema:
+            $ref: '#/definitions/NewUser'
+      responses:
+        201:
+          description: user updated
+          schema:
+            $ref: '#/definitions/User'
+  /users/{username}:
+    get:
+      description: Returns the user with the specific username
+      operationId: getUserByUsername
+      parameters:
+        - name: username
+          in: path
+          description: username of user to be returned
+          required: true
+          type: string
+      responses:
+        200:
+          description: Sucess, user data returned
+          schema:
+            $ref: '#/definitions/User'
+  /posts:
+    get:
+      description: Get posts
+      operationId: getPosts
+      parameters:
+        - name: pageSize
+          in: query
+          description: number of posts per response, defaults to 15
+          required: false
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Success; Posts returned
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Post'
+  /posts/{slug}:
+    get:
+      description: get post by slug
+      operationId: getPostBySlug
+      parameters:
+        - name: slug
+          in: path
+          description: slug of the post to get
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success; Post returned
+          schema:
+            $ref: '#/definitions/Post'
+  /posts/{slug}/comments:
+    get:
+      description: get comments for given post
+      operationId: getPostComments
+      parameters:
+        - name: slug
+          in: path
+          description: slug of post to find comments for
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success; returned comments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Comment'
+definitions:
+  User:
+    properties:
+      uuid:
+        type: string
+      username:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      authLevel:
+        type: integer
+        format: int32
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  NewUser:
+    properties:
+      username:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      authLevel:
+        type: integer
+        format: int32
+  Post:
+    properties:
+      uuid:
+        type: string
+      title: 
+        type: string
+      slug:
+        type: string
+      content:
+        type: string
+      excerpt: 
+        type: string
+      status:
+        type: integer
+      authorUUID:
+        type: [string]
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+      publishedAt:
+        type: string
+        format: date-time
+  Comment:
+    properties:
+      uuid: 
+        type: string
+      parentUUID:
+        type: string
+      author:
+        type: string
+      slug: 
+        type: string
+      content:
+        type: string
+      score:
+        type: integer
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
