@@ -175,9 +175,6 @@ definitions:
         type: string
       email:
         type: string
-      authLevel:
-        type: integer
-        format: int32
   Post:
     properties:
       uuid:
